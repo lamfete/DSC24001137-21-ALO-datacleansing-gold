@@ -22,7 +22,7 @@ class CustomFlaskAppWithEncoder(Flask):
 
 app = CustomFlaskAppWithEncoder(__name__)
 
-conn = sqlite3.connect('data/binar_dsc_gold_challenge.db', check_same_thread=False)
+#conn = sqlite3.connect('data/binar_dsc_gold_challenge.db', check_same_thread=False)
 
 swagger_template = dict(
     info={
@@ -51,6 +51,8 @@ swagger = Swagger(app, template=swagger_template, config=swagger_config)
 @swag_from("docs/view_all_text.yml", methods=['GET'])
 @app.route('/view_all_text', methods=['GET'])
 def view_all_text():
+    conn = sqlite3.connect('data/binar_dsc_gold_challenge.db', check_same_thread=False)
+
     cursor = conn.execute("SELECT teks_sebelum, teks_setelah FROM pengolahan_teks")
     all_text = []
 
@@ -81,9 +83,10 @@ def text_processing():
         'data': text_processed,
     }
 
+    conn = sqlite3.connect('data/binar_dsc_gold_challenge.db', check_same_thread=False)
     conn.execute("INSERT INTO pengolahan_teks(teks_sebelum, teks_setelah) VALUES (?, ?)", (text, text_processed))
     conn.commit()
-    conn.close()
+    #conn.close()
 
     response_data = jsonify(json_response)
     return response_data
@@ -119,9 +122,10 @@ def file_processing():
             'data': cleaned_text,
         }
 
+        conn = sqlite3.connect('data/binar_dsc_gold_challenge.db', check_same_thread=False)
         conn.execute("INSERT INTO pengolahan_teks(teks_sebelum, teks_setelah) VALUES (?, ?)", (str(texts), str(cleaned_text)))
         conn.commit()
-        conn.close()
+        #conn.close()
 
         response_data = jsonify(json_response)
         return response_data
@@ -137,4 +141,4 @@ def file_processing():
         return response_data
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
